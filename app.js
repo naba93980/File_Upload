@@ -1,9 +1,11 @@
 require('dotenv').config();
 require('express-async-errors');
 
-const fileUpload = require('express-fileupload');
 const express = require('express');
 const app = express();
+
+const fileUpload = require('express-fileupload');
+const cloudinary = require('cloudinary').v2;
 
 // database
 const connectDB = require('./db/connect');
@@ -15,10 +17,15 @@ const productRouter = require('./routes/productRoutes');
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET
+})
 
 app.use(express.static('./public'))
 app.use(express.json());
-app.use(fileUpload());
+app.use(fileUpload({ useTempFiles: true }));
 app.use('/products', productRouter);
 
 
